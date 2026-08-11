@@ -37,7 +37,7 @@ def chat():
         ai_reply = response.json()['choices'][0]['message']['content']
         return jsonify({"reply": ai_reply})
     except Exception as e:
-        print(f"Error: {e}")
-        return jsonify({"reply": "Sorry, I am having trouble connecting to the AI right now."}), 500
+        # We are changing this to show the REAL error in the chat box!
+        return jsonify({"reply": f"Backend Error: {str(e)}"}), 500
 
 # Removed the app.run() part because Vercel handles the server automatically!
