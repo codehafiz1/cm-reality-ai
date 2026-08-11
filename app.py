@@ -4,28 +4,29 @@ import os
 import requests
 from dotenv import load_dotenv
 
-# Load the environment variables from the .env file
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app) # Allow Shopify to communicate with this API
+CORS(app)
 
-# Get the API key safely from the .env file
-OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+# Changed to Groq!
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 @app.route('/chat', methods=['POST'])
 def chat():
     user_message = request.json.get('message')
     
-    url = "https://openrouter.ai/api/v1/chat/completions"
+    # Groq's API URL
+    url = "https://api.groq.com/openai/v1/chat/completions"
     
     headers = {
-        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+        "Authorization": f"Bearer {GROQ_API_KEY}",
         "Content-Type": "application/json"
     }
     
     payload = {
-        "model": "google/gemma-7b-it:free", 
+        # Using Llama 3 on Groq (super fast!)
+        "model": "llama3-8b-8192", 
         "messages": [
             {"role": "system", "content": "You are a helpful assistant for the CM Reality website. Be friendly and concise."},
             {"role": "user", "content": user_message}
@@ -38,8 +39,7 @@ def chat():
         ai_reply = response.json()['choices'][0]['message']['content']
         return jsonify({"reply": ai_reply})
     except Exception as e:
-        print(f"Error: {e}") # Good for debugging
-        return jsonify({"reply": "Sorry, I am having trouble connecting to the AI right now."}), 500
+        # We will keep this so if there's an error, it tells us exactly what it is
+        return jsonify({"reply": f"Backend Error: {str(e)}"}), 500
 
-if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+# Update for Vercel
