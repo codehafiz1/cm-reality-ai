@@ -13,8 +13,10 @@ def after_request(response):
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
-@app.route('/api/', methods=['POST', 'OPTIONS'])
-def chat():
+# This tells Flask to accept "/" and "/api/" and anything else!
+@app.route('/', defaults={'path': ''}, methods=['POST', 'OPTIONS'])
+@app.route('/<path:path>', methods=['POST', 'OPTIONS'])
+def chat(path):
     if request.method == 'OPTIONS':
         return jsonify({'status': 'ok'}), 200
 
