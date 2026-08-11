@@ -20,7 +20,7 @@ def chat():
     }
     
     payload = {
-        "model": "llama3-70b-8192", 
+        "model": "llama-3.3-70b-versatile", 
         "messages": [
             {"role": "system", "content": "You are a helpful assistant for the CM Reality website. Be friendly and concise."},
             {"role": "user", "content": user_message}
