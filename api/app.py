@@ -38,3 +38,4 @@ def chat():
         return jsonify({"reply": f"Groq API Error: {response.text}"}), 500
     except Exception as e:
         return jsonify({"reply": f"Other Error: {str(e)}"}), 500
+        
