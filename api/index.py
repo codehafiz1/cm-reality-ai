@@ -13,32 +13,44 @@ def after_request(response):
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
-# This tells Flask to accept "/" and "/api/" and anything else!
-@app.route('/', defaults={'path': ''}, methods=['POST', 'OPTIONS'])
-@app.route('/<path:path>', methods=['POST', 'OPTIONS'])
-def chat(path):
+@app.route('/chat', methods=['POST', 'OPTIONS'])
+def chat():
     if request.method == 'OPTIONS':
         return jsonify({'status': 'ok'}), 200
 
-    user_message = request.json.get('message')
-    
+    data = request.json
+    user_message = data.get('message', '')
+    image_data = data.get('image', None)
+
     url = "https://api.groq.com/openai/v1/chat/completions"
-    
     headers = {
         "Authorization": f"Bearer {GROQ_API_KEY}",
         "Content-Type": "application/json"
     }
-    
+
+    # Build the content array for the Vision model
+    content = []
+    if user_message:
+        content.append({"type": "text", "text": user_message})
+    else:
+        content.append({"type": "text", "text": "What is in this image?"})
+
+    if image_data:
+        content.append({
+            "type": "image_url",
+            "image_url": {"url": image_data}
+        })
+
     payload = {
-        "model": "llama-3.3-70b-versatile", 
+        # Switched to Groq's Vision Model!
+        "model": "llama-3.2-11b-vision-preview", 
         "messages": [
-            {"role": "system", "content": "You are a helpful assistant for the CM Reality website. Be friendly and concise."},
-            {"role": "user", "content": user_message}
+            {"role": "user", "content": content}
         ],
         "temperature": 0.7,
         "max_tokens": 150
     }
-    
+
     try:
         response = requests.post(url, headers=headers, json=payload)
         response.raise_for_status()
