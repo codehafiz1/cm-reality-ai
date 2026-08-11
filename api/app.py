@@ -41,3 +41,5 @@ def chat():
     except Exception as e:
         # We will keep this so if there's an error, it tells us exactly what it is
         return jsonify({"reply": f"Backend Error: {str(e)}"}), 500
+
+    # Update for Vercel
