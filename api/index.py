@@ -4,7 +4,6 @@ import requests
 
 app = Flask(__name__)
 
-# We are manually adding the CORS headers here so Vercel doesn't block Shopify!
 @app.after_request
 def after_request(response):
     response.headers.add('Access-Control-Allow-Origin', '*')
@@ -14,10 +13,9 @@ def after_request(response):
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
-@app.route('/', defaults={'path': ''}, methods=['POST', 'OPTIONS'])
-@app.route('/<path:path>', methods=['POST', 'OPTIONS'])
-def chat(path):
-    # Vercel sends an OPTIONS request first. We must reply "OK" to it!
+# Vercel automatically routes /api to this file. We just need the '/' route.
+@app.route('/', methods=['POST', 'OPTIONS'])
+def chat():
     if request.method == 'OPTIONS':
         return jsonify({'status': 'ok'}), 200
 
