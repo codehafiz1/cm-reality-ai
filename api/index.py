@@ -13,7 +13,6 @@ def after_request(response):
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
-# Vercel automatically routes /api to this file. We just need the '/' route.
 @app.route('/', methods=['POST', 'OPTIONS'])
 def chat():
     if request.method == 'OPTIONS':
