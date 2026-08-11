@@ -13,7 +13,6 @@ def after_request(response):
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
-@app.route('/api', methods=['POST', 'OPTIONS'])
 @app.route('/api/', methods=['POST', 'OPTIONS'])
 def chat():
     if request.method == 'OPTIONS':
