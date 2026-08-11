@@ -1,16 +1,26 @@
 from flask import Flask, request, jsonify
-from flask_cors import CORS
 import os
 import requests
 
 app = Flask(__name__)
-app.url_map.strict_slashes = False  # <-- ADD THIS LINE HERE!
-CORS(app)
+
+# We are manually adding the CORS headers here so Vercel doesn't block Shopify!
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    return response
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
-@app.route('/', methods=['POST'])
-def chat():
+@app.route('/', defaults={'path': ''}, methods=['POST', 'OPTIONS'])
+@app.route('/<path:path>', methods=['POST', 'OPTIONS'])
+def chat(path):
+    # Vercel sends an OPTIONS request first. We must reply "OK" to it!
+    if request.method == 'OPTIONS':
+        return jsonify({'status': 'ok'}), 200
+
     user_message = request.json.get('message')
     
     url = "https://api.groq.com/openai/v1/chat/completions"
@@ -39,6 +49,3 @@ def chat():
         return jsonify({"reply": f"Groq API Error: {response.text}"}), 500
     except Exception as e:
         return jsonify({"reply": f"Other Error: {str(e)}"}), 500
-
-
-# forcing update
