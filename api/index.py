@@ -4,6 +4,7 @@ import os
 import requests
 
 app = Flask(__name__)
+app.url_map.strict_slashes = False  # <-- ADD THIS LINE HERE!
 CORS(app)
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
